@@ -3,38 +3,38 @@ import styled from '@emotion/styled';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 const MasonryGrid = () => {
-    const [photos, setPhotos] = useState<any[]>([]);
-    const [nextPage, setNextPage] = useState<string>('1');
-    const loadingRef = useRef<HTMLDivElement>(null);
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [nextPage, setNextPage] = useState<string>('1');
+  const loadingRef = useRef<HTMLDivElement>(null);
 
-    const apiKey = 'oFM00Lnj8RWYXkUPAS9tguhy4sPU1scIB8lTQuxQDYCyewkR4ubrkrA9';
-    const baseUrl = 'https://api.pexels.com/v1';
+  const apiKey = import.meta.env.VITE_API_KEY;
+  const baseUrl = import.meta.env.VITE_BASE_URL;
 
-    const getPhotos = useCallback(async () => {
-        try {
-            const response = await fetch(`${baseUrl}/curated?page=${nextPage}&per_page=${50}`, {
-                headers: {
-                    Authorization: apiKey,
-                },
-            });
-            const { photos: newPhotos, next_page } = await response.json();
-            setPhotos(prevPhotos => [...prevPhotos, ...newPhotos]);
-            setNextPage(next_page);
-        } catch (error) {
-            console.error((error as Error).message);
-        }
-    }, [nextPage]);
+  const getPhotos = useCallback(async () => {
+    try {
+      const response = await fetch(`${baseUrl}/curated?page=${nextPage}&per_page=${50}`, {
+        headers: {
+          Authorization: apiKey ?? '',
+        },
+      });
+      const { photos: newPhotos, next_page } = await response.json();
+      setPhotos(prevPhotos => [...prevPhotos, ...newPhotos]);
+      setNextPage(next_page);
+    } catch (error) {
+      console.error((error as Error).message);
+    }
+  }, [nextPage]);
 
-    useInfiniteScroll({ fetchData: getPhotos, targetRef: loadingRef });
+  useInfiniteScroll({ fetchData: getPhotos, targetRef: loadingRef });
 
-    return (
-        <>
-            <ImageContainer>
-                {photos?.map(photo => <img key={photo.id} src={photo.src.medium} alt={photo.alt} />)}
-            </ImageContainer>
-            {nextPage && <div ref={loadingRef}>Loading...</div>}
-        </>
-    );
+  return (
+    <>
+      <ImageContainer>
+        {photos?.map(photo => <img key={photo.id} src={photo.src.medium} alt={photo.alt} />)}
+      </ImageContainer>
+      {nextPage && <div ref={loadingRef}>Loading...</div>}
+    </>
+  );
 };
 
 const ImageContainer = styled.section`
